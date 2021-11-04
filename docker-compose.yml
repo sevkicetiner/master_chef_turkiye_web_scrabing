@@ -4,16 +4,25 @@ version: '3.1'
 
 services:
 
+  java:
+    image: adoptopenjdk/openjdk10:latest
+
   api_service:
     build: .
     restart: always
-    port:
+    ports:
       - 8080:8080
-    depend_on:
+    depends_on:
       - mongo
+    links:
+      - java
+    environment:
+      - SPRING_DATA_MONGODB_.HOST=mongo
 
   mongo:
     image: mongo:4.1.6
+    expose:
+      - "27017"
     ports:
       - 27017:27017
     restart: always
