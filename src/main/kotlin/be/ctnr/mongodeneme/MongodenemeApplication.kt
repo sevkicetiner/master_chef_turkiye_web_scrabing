@@ -7,10 +7,10 @@ import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.scheduling.annotation.EnableScheduling
 
-@ServletComponentScan
-@SpringBootApplication
+//@ServletComponentScan
 @EnableScheduling
-@EnableAutoConfiguration(exclude= [MongoAutoConfiguration::class])
+//@EnableAutoConfiguration(exclude= [MongoAutoConfiguration::class])
+@SpringBootApplication
 class MongodenemeApplication
 
 fun main(args: Array<String>) {

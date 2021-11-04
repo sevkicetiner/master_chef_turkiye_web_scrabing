@@ -2,6 +2,7 @@ package be.ctnr.mongodeneme.masterchef.components
 
 import be.ctnr.mongodeneme.masterchef.repository.RecipeRepository
 import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.lang.Exception
@@ -16,12 +17,13 @@ class UpdateDatabase(val recipeRepository: RecipeRepository)  {
         counter +=1
         list.forEach {
 
-            val finded = recipeRepository.findById(it.id)
-            if(finded.isEmpty){
+            val finded = recipeRepository.findByIdOrNull(it.id)
+            println(finded?.id ?: "bos geldi");
+            if(finded != null ){
                 println("bu daha once eklenmemis")
             }else {
                 try {
-                    recipeRepository.insert(it)
+                    recipeRepository.save(it)
                 } catch (err:Exception) {
                     print(err)
                 }
