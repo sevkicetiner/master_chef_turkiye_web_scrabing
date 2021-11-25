@@ -12,7 +12,7 @@ import java.lang.Exception
 class UpdateDatabase(val recipeRepository: RecipeRepository)  {
     var counter = 1
     var newItemCount:Int= 0
-    @Scheduled(fixedRate = 1000*60*60+6)
+    @Scheduled(fixedRate = 1000*60*60*6)
     fun calisiyormusun(){
         val list = MasterchefRest.sendGet(1)
         counter++
