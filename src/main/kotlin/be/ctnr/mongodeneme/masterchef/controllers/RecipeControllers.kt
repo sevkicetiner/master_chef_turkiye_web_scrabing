@@ -54,29 +54,29 @@ class RecipeControllers(
         }
     }
 
-    @GetMapping("/getStream")
-    fun streamData(@RequestHeader("token") token:String): ResponseEntity<StreamingResponseBody?>? {
-        val responseBody = StreamingResponseBody { response: OutputStream ->
-            for (i in 1..1000) {
-                try {
-                    Thread.sleep(10)
-                    response.write("Data stream line - $i\n".toByteArray())
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        return ResponseEntity.ok()
-            .contentType(MediaType.TEXT_PLAIN)
-            .body(responseBody)
-    }
-
-    @GetMapping("/startUpdate")
-    fun startUpdate(@RequestHeader("token") token:String) : ResponseEntity<String>{
-        if(token == env.getProperty("token")){
-            return ResponseEntity<String>(HttpStatus.OK)
-        } else {
-           return ResponseEntity<String>(HttpStatus.BAD_REQUEST)
-        }
-    }
+//    @GetMapping("/getStream")
+//    fun streamData(@RequestHeader("token") token:String): ResponseEntity<StreamingResponseBody?>? {
+//        val responseBody = StreamingResponseBody { response: OutputStream ->
+//            for (i in 1..1000) {
+//                try {
+//                    Thread.sleep(10)
+//                    response.write("Data stream line - $i\n".toByteArray())
+//                } catch (e: InterruptedException) {
+//                    e.printStackTrace()
+//                }
+//            }
+//        }
+//        return ResponseEntity.ok()
+//            .contentType(MediaType.TEXT_PLAIN)
+//            .body(responseBody)
+//    }
+//
+//    @GetMapping("/startUpdate")
+//    fun startUpdate(@RequestHeader("token") token:String) : ResponseEntity<String>{
+//        if(token == env.getProperty("token")){
+//            return ResponseEntity<String>(HttpStatus.OK)
+//        } else {
+//           return ResponseEntity<String>(HttpStatus.BAD_REQUEST)
+//        }
+//    }
 }
