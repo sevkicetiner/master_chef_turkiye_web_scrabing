@@ -3,18 +3,16 @@ package be.ctnr.mongodeneme.masterchef.controllers
 import be.ctnr.mongodeneme.masterchef.model.Recipe
 import be.ctnr.mongodeneme.masterchef.repository.RecipeRepository
 import com.google.gson.Gson
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import java.io.OutputStream
-import java.math.BigInteger
-import java.security.MessageDigest
-import org.springframework.core.env.Environment
+import kotlin.random.Random
+
 
 @RestController
 @RequestMapping("/recipes")
@@ -54,6 +52,18 @@ class RecipeControllers(
         }
     }
 
+    @GetMapping("/random")
+    fun getRecipeRandom(@RequestHeader("token") token:String):ResponseEntity<String> {
+        return if(token == env.getProperty("token")){
+            val recipeListCount = recipeRepository.findAll().count()-1
+            val randomInt = Random.nextInt(recipeListCount)
+            println("$recipeListCount   $randomInt")
+            ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body( Gson().toJson(recipeRepository.findAll()[randomInt]))
+        } else {
+            ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(Gson().toJson("{\"token\": \"not correct\"}"))
+        }
+    }
+
 //    @GetMapping("/getStream")
 //    fun streamData(@RequestHeader("token") token:String): ResponseEntity<StreamingResponseBody?>? {
 //        val responseBody = StreamingResponseBody { response: OutputStream ->
@@ -71,12 +81,4 @@ class RecipeControllers(
 //            .body(responseBody)
 //    }
 //
-//    @GetMapping("/startUpdate")
-//    fun startUpdate(@RequestHeader("token") token:String) : ResponseEntity<String>{
-//        if(token == env.getProperty("token")){
-//            return ResponseEntity<String>(HttpStatus.OK)
-//        } else {
-//           return ResponseEntity<String>(HttpStatus.BAD_REQUEST)
-//        }
-//    }
 }
