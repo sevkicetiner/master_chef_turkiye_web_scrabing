@@ -21,5 +21,19 @@ class MasterchefRest {
                 return Gson().fromJson(response, RecipeList::class.java);
             }
         }
+        suspend fun sendGetSuspend(page: Int):RecipeList {
+            val url = URL("https://www.acunn.com/Ajax/icerik/haberler/1202/$page?type=json")
+            with(url.openConnection() as HttpURLConnection) {
+                requestMethod = "GET"  // optional default is GET
+
+                var response = ""
+                inputStream.bufferedReader().use {
+                    it.lines().forEach { line ->
+                        response+=line
+                    }
+                }
+                return Gson().fromJson(response, RecipeList::class.java);
+            }
+        }
     }
 }

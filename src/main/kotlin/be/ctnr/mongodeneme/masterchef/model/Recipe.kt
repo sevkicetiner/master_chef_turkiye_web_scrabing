@@ -31,5 +31,6 @@ data class Recipe(
     val video_suresi: String,
     val yayinlanma_tarihi: String,
     val yerlesim_id: String,
-    var date:Date?
+    var date:Date?,
+    var photo:String?
 )
