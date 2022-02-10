@@ -17,6 +17,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.*
+import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 
 
@@ -78,21 +79,21 @@ class RecipeControllers(
         return if (env.getProperty("token") == token) {
             for (page in 1..10) {
                 MasterchefRest.sendGet(page).let { recipeList ->
-
-                    recipeList.forEach { item ->
-                        val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
-                        resimOriginal.let {
-                            val url = URL("https://img.acunn.com/$resimOriginal")
-                            val inputstream = url.openStream()
-                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
-                            inputstream.close()
+                    Thread().run {
+                        recipeList.forEach { item ->
+                            val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
+                            resimOriginal.let {
+                                val url = URL("https://img.acunn.com/$resimOriginal")
+                                val inputstream = url.openStream()
+                                Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
+                                inputstream.close()
+                            }
+                            recipeRepository.save(item)
                         }
-                        recipeRepository.save(item)
                     }
                 }
             }
             "started update"
         } else "token is not correct"
-
     }
 }
