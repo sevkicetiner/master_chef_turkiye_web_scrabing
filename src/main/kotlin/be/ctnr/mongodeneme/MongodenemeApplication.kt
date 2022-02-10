@@ -6,8 +6,9 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.web.servlet.DispatcherServlet
 
-//@ServletComponentScan
+@ServletComponentScan
 @EnableScheduling
 //@EnableAutoConfiguration(exclude= [MongoAutoConfiguration::class])
 @SpringBootApplication
