@@ -28,3 +28,5 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongoadmin.4238844
       MONGO_INITDB_ROOT_PASSWORD: mongoadmin.4238844
+    volumes:
+      - /media/storage/masterchef/mongodb:/data/db
