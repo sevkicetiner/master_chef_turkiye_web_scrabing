@@ -17,7 +17,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.*
-import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 
 
@@ -77,23 +76,27 @@ class RecipeControllers(
     @GetMapping("/startUpdate")
     fun startUpdate(@RequestHeader("token") token: String): String {
         return if (env.getProperty("token") == token) {
-            for (page in 1..10) {
+            var page = 1
+            var loop = true
+            while (loop) {
                 MasterchefRest.sendGet(page).let { recipeList ->
-                    Thread().run {
-                        recipeList.forEach { item ->
-                            val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
-                            resimOriginal.let {
-                                val url = URL("https://img.acunn.com/$resimOriginal")
-                                val inputstream = url.openStream()
-                                Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
-                                inputstream.close()
-                            }
-                            recipeRepository.save(item)
+                    if(recipeList.size == 0)
+                        loop = false
+
+                    recipeList.forEach { item ->
+                        val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
+                        resimOriginal.let {
+                            val url = URL("https://img.acunn.com/$resimOriginal")
+                            val inputstream = url.openStream()
+                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
+                            inputstream.close()
                         }
+                        recipeRepository.save(item)
                     }
                 }
             }
             "started update"
         } else "token is not correct"
+
     }
 }
