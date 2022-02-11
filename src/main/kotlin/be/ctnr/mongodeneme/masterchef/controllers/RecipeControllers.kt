@@ -92,7 +92,7 @@ class RecipeControllers(
                             val url = URL("${env.getProperty("imageUrl")}/$resimOriginal")
                             inputstream = InputStream.nullInputStream()
                             inputstream = url.openStream()
-                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}/${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
+                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}/${resimOriginal.split("/").last()}").toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING)
                             //
                         }
                         recipeRepository.save(item)
