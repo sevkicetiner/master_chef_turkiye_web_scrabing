@@ -16,7 +16,7 @@ services:
     links:
       - java
     environment:
-      - SPRING_DATA_MONGODB_.HOST=mongo
+      - SPRING_DATA_MONGODB_.HOST=localhost
 
   mongo:
     image: mongo:4.1.6
