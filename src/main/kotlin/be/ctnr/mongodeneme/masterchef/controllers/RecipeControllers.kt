@@ -6,12 +6,14 @@ import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import org.springframework.core.env.Environment
+import org.springframework.core.env.get
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.messaging.*
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.io.InputStream
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -75,6 +77,7 @@ class RecipeControllers(
 
     @GetMapping("/startUpdate")
     fun startUpdate(@RequestHeader("token") token: String): String {
+        println("update started")
         return if (env.getProperty("token") == token) {
             var page = 1
             var loop = true
@@ -82,20 +85,24 @@ class RecipeControllers(
                 MasterchefRest.sendGet(page).let { recipeList ->
                     if(recipeList.size == 0)
                         loop = false
-
+                    var inputstream:InputStream = InputStream.nullInputStream()
                     recipeList.forEach { item ->
                         val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
                         resimOriginal.let {
-                            val url = URL("https://img.acunn.com/$resimOriginal")
-                            val inputstream = url.openStream()
-                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
-                            inputstream.close()
+                            val url = URL("${env.getProperty("imageUrl")}/$resimOriginal")
+                            inputstream = InputStream.nullInputStream()
+                            inputstream = url.openStream()
+                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}/${resimOriginal.split("/").last()}"), StandardCopyOption.REPLACE_EXISTING)
+                            //
                         }
                         recipeRepository.save(item)
                     }
+                    inputstream.let {
+                        inputstream.close()
+                    }
                 }
             }
-            "started update"
+            "database updated"
         } else "token is not correct"
 
     }
