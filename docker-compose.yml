@@ -21,12 +21,12 @@ services:
   mongo:
     image: mongo:4.1.6
     expose:
-      - "27017"
+      - "27018"
     ports:
-      - 27017:27017
+      - 27018:27018
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongoadmin.4238844
       MONGO_INITDB_ROOT_PASSWORD: mongoadmin.4238844
     volumes:
-      - /media/storage/masterchef/mongodb:/data
+      - /media/storage/mongodb:/data/db
