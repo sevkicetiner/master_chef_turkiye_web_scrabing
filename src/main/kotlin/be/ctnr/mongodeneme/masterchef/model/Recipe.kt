@@ -32,5 +32,6 @@ data class Recipe(
     val yayinlanma_tarihi: String,
     val yerlesim_id: String,
     var date:Date?,
-    var photo:String?
+    var photo:String?,
+    var localImage: String?
 )

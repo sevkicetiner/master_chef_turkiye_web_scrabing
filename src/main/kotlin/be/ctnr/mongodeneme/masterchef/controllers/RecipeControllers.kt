@@ -33,7 +33,7 @@ class RecipeControllers(
     @GetMapping("/{page}")
     fun getRecipesByPage(@PathVariable("page") page: Int, @RequestHeader("token") token: String): String {
         return if (token == env.getProperty("token")) {
-            val pageRequest = PageRequest.of(page, 20, Sort.by("id").descending())
+            val pageRequest = PageRequest.of(page, 1, Sort.by("id").descending())
             val list = recipeRepository.findAll(pageRequest)
             Gson().toJson(list.content)
         } else {
@@ -83,27 +83,33 @@ class RecipeControllers(
             var loop = true
             while (loop) {
                 MasterchefRest.sendGet(page).let { recipeList ->
+                    page++
                     if(recipeList.size == 0)
                         loop = false
-                    var inputstream:InputStream = InputStream.nullInputStream()
+                    var inputstream = InputStream.nullInputStream()
                     recipeList.forEach { item ->
                         val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
                         resimOriginal.let {
-                            val url = URL("${env.getProperty("imageUrl")}/$resimOriginal")
-                            inputstream = InputStream.nullInputStream()
-                            inputstream = url.openStream()
-                            Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}/${resimOriginal.split("/").last()}").toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING)
-                            //
+                            try{
+                                val url = URL("${env.getProperty("imageUrl")}/$resimOriginal")
+                                if(inputstream != InputStream.nullInputStream()){
+                                    inputstream = InputStream.nullInputStream()
+                                }
+                                inputstream = url.openStream()
+                                item.localImage = resimOriginal.split("/").last()
+                                Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}/${item.localImage}").toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING)
+
+                            } catch (e:Exception){
+                                println(e.message)
+                            }
+
                         }
                         recipeRepository.save(item)
                     }
-                    inputstream.let {
-                        inputstream.close()
-                    }
+                    inputstream.close()
                 }
             }
             "database updated"
         } else "token is not correct"
-
     }
 }
