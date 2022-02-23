@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: be.ctnr.mongodeneme.MongodenemeApplicationTests
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.436 s - in be.ctnr.mongodeneme.MongodenemeApplicationTests
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.674 s - in be.ctnr.mongodeneme.MongodenemeApplicationTests
+>>>>>>> d2aeeca3a1937480ae9847f62bf9595fd9211929
