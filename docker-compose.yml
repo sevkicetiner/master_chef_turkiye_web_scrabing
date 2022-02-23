@@ -25,5 +25,5 @@ services:
     links:
       - java
     environment:
-      - SPRING_DATA_MONGODB_.HOST=mongodb
+      - SPRING_DATA_MONGODB_.HOST=mongo
 
