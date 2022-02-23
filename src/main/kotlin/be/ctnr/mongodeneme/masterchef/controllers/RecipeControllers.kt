@@ -5,8 +5,9 @@ import be.ctnr.mongodeneme.masterchef.repository.RecipeRepository
 import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import org.apache.tomcat.util.codec.binary.Base64.encodeBase64String
+import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.core.env.Environment
-import org.springframework.core.env.get
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.messaging.*
@@ -33,7 +34,7 @@ class RecipeControllers(
     @GetMapping("/{page}")
     fun getRecipesByPage(@PathVariable("page") page: Int, @RequestHeader("token") token: String): String {
         return if (token == env.getProperty("token")) {
-            val pageRequest = PageRequest.of(page, 1, Sort.by("id").descending())
+            val pageRequest = PageRequest.of(page, 20, Sort.by("id").descending())
             val list = recipeRepository.findAll(pageRequest)
             Gson().toJson(list.content)
         } else {
@@ -61,6 +62,11 @@ class RecipeControllers(
         }
     }
 
+    @GetMapping("/base64")
+    fun getBase64():String{
+        return  Base64.getEncoder().encodeToString(URL("https://kotlinlang.org/assets/images/twitter/general.png").openStream().readAllBytes())
+    }
+
     @GetMapping("/random")
     fun getRecipeRandom(@RequestHeader("token") token: String): ResponseEntity<String> {
         return if (token == env.getProperty("token")) {
@@ -83,28 +89,19 @@ class RecipeControllers(
             var loop = true
             while (loop) {
                 MasterchefRest.sendGet(page).let { recipeList ->
-                    page++
+//                    page++
                     if(recipeList.size == 0)
                         loop = false
                     var inputstream = InputStream.nullInputStream()
                     recipeList.forEach { item ->
-                        val resimOriginal:String = JsonParser().parse(item.resim.replace("\\","").replace("\\","")).asJsonObject.get("original").asString ?: "bulamadik"
-                        resimOriginal.let {
-                            try{
-                                val url = URL("${env.getProperty("imageUrl")}/$resimOriginal")
-                                if(inputstream != InputStream.nullInputStream()){
-                                    inputstream = InputStream.nullInputStream()
-                                }
-                                inputstream = url.openStream()
-                                item.localImage = resimOriginal.split("/").last()
-                                Files.copy(inputstream, Paths.get("${env.getProperty("imagePath")}/${item.localImage}").toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING)
-
-                            } catch (e:Exception){
-                                println(e.message)
-                            }
-
+                        val resimOriginal:String = JsonParser()
+                            .parse(item.resim.replace("\\","").replace("\\",""))
+                            .asJsonObject
+                            .get("original").asString ?: "null"
+                        item.localImage = Base64.getEncoder().encodeToString(URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes())
+                        recipeRepository.save(item).let {
+                            println("${item.baslik} kaydedildi")
                         }
-                        recipeRepository.save(item)
                     }
                     inputstream.close()
                 }
