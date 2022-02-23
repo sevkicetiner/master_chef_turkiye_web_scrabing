@@ -20,9 +20,9 @@ import java.util.*
 class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environment)  {
     var counter = 1
     var newItemCount:Int= 0
-    @Scheduled(fixedRate = 1000*60*60*6)
+    @Scheduled(fixedRate = 1000*60*60*1)
     fun calisiyormusun(){
-        val list = MasterchefRest.sendGet(counter)
+        val list = MasterchefRest.sendGet(1)
         counter++
         list.forEach {
             val finded = recipeRepository.findByIdOrNull(it.id)

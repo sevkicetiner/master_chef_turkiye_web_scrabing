@@ -13,7 +13,9 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.messaging.*
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.function.ServerResponse.async
 import java.io.InputStream
 import java.net.URL
 import java.nio.file.Files
@@ -34,8 +36,9 @@ class RecipeControllers(
     @GetMapping("/{page}")
     fun getRecipesByPage(@PathVariable("page") page: Int, @RequestHeader("token") token: String): String {
         return if (token == env.getProperty("token")) {
-            val pageRequest = PageRequest.of(page, 20, Sort.by("id").descending())
+            val pageRequest = PageRequest.of(page, 10, Sort.by("_id").descending())
             val list = recipeRepository.findAll(pageRequest)
+            println("istek alindi")
             Gson().toJson(list.content)
         } else {
             Gson().toJson("{\"token\": \"not correct\"}")
@@ -62,11 +65,6 @@ class RecipeControllers(
         }
     }
 
-    @GetMapping("/base64")
-    fun getBase64():String{
-        return  Base64.getEncoder().encodeToString(URL("https://kotlinlang.org/assets/images/twitter/general.png").openStream().readAllBytes())
-    }
-
     @GetMapping("/random")
     fun getRecipeRandom(@RequestHeader("token") token: String): ResponseEntity<String> {
         return if (token == env.getProperty("token")) {
@@ -81,32 +79,39 @@ class RecipeControllers(
         }
     }
 
-    @GetMapping("/startUpdate")
-    fun startUpdate(@RequestHeader("token") token: String): String {
-        println("update started")
-        return if (env.getProperty("token") == token) {
-            var page = 1
-            var loop = true
-            while (loop) {
-                MasterchefRest.sendGet(page).let { recipeList ->
+//    @GetMapping("/startUpdate")
+//    fun startUpdate(@RequestHeader("token") token: String): String {
+//        println("update started")
+//        return if (env.getProperty("token") == token) {
+//            var page = 74
+//            var loop = true
+//            while (loop) {
+//                MasterchefRest.sendGet(page).let { recipeList ->
 //                    page++
-                    if(recipeList.size == 0)
-                        loop = false
-                    var inputstream = InputStream.nullInputStream()
-                    recipeList.forEach { item ->
-                        val resimOriginal:String = JsonParser()
-                            .parse(item.resim.replace("\\","").replace("\\",""))
-                            .asJsonObject
-                            .get("original").asString ?: "null"
-                        item.localImage = Base64.getEncoder().encodeToString(URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes())
-                        recipeRepository.save(item).let {
-                            println("${item.baslik} kaydedildi")
-                        }
-                    }
-                    inputstream.close()
-                }
-            }
-            "database updated"
-        } else "token is not correct"
+//                    if(recipeList.size == 0)
+//                        loop = false
+//                    recipeList.forEach { item ->
+//                        if(!recipeRepository.existsById(item.id)) {
+//                                saveItemWithImage(item)
+//                        }else println("eklenmis$page")
+//                    }
+//                }
+//            }
+//            "database updated"
+//        } else "token is not correct"
+//    }
+
+    @Async
+    fun saveItemWithImage(item:Recipe) {
+        val resimOriginal: String = JsonParser()
+            .parse(item.resim.replace("\\", "").replace("\\", ""))
+            .asJsonObject
+            .get("original").asString ?: "null"
+        if(resimOriginal != "null"){
+            item.localImage = Base64.getEncoder().encodeToString(
+                URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes()
+            )
+        }
+        recipeRepository.save(item)
     }
 }
