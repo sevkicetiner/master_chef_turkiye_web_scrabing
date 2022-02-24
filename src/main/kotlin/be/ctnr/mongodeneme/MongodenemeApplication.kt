@@ -11,7 +11,7 @@ import org.springframework.web.servlet.DispatcherServlet
 
 @ServletComponentScan
 @EnableScheduling
-//@EnableAutoConfiguration(exclude= [MongoAutoConfiguration::class])
+@EnableAutoConfiguration(exclude= [MongoAutoConfiguration::class])
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
 class MongodenemeApplication
 fun main(args: Array<String>) {
