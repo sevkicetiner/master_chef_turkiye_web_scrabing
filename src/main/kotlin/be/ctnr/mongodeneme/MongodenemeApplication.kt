@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.servlet.DispatcherServlet
 
 @ServletComponentScan
 @EnableScheduling
-@EnableAutoConfiguration(exclude= [MongoAutoConfiguration::class])
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
+//@EnableAutoConfiguration(exclude= [])
+@SpringBootApplication()
+//@ContextConfiguration("/applicationContext.xml")
 class MongodenemeApplication
 fun main(args: Array<String>) {
 	runApplication<MongodenemeApplication>(*args)
