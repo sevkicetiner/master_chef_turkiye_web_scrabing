@@ -12,9 +12,7 @@ import org.springframework.web.servlet.DispatcherServlet
 
 @ServletComponentScan
 @EnableScheduling
-//@EnableAutoConfiguration(exclude= [])
 @SpringBootApplication()
-//@ContextConfiguration("/applicationContext.xml")
 class MongodenemeApplication
 fun main(args: Array<String>) {
 	runApplication<MongodenemeApplication>(*args)

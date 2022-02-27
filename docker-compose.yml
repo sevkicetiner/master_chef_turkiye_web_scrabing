@@ -11,4 +11,7 @@ services:
       - 8080:8080
     links:
       - java
-
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_DATA_MONGODB_.HOST=mongo

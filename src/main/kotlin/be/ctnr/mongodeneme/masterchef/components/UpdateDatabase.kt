@@ -20,7 +20,7 @@ import java.util.*
 class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environment)  {
     var counter = 1
     var newItemCount:Int= 0
-    @Scheduled(fixedRate = 1000*60*60*1)
+    @Scheduled(fixedDelay = 1000*60*60*3, initialDelay = 30000)
     fun calisiyormusun(){
         val list = MasterchefRest.sendGet(1)
         counter++
