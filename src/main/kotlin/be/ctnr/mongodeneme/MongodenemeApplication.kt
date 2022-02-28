@@ -7,8 +7,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.web.servlet.DispatcherServlet
 
 @ServletComponentScan
 @EnableScheduling

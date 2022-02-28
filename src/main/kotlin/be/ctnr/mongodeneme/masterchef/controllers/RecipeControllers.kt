@@ -1,28 +1,23 @@
 package be.ctnr.mongodeneme.masterchef.controllers
 
 import be.ctnr.mongodeneme.masterchef.model.Recipe
+import be.ctnr.mongodeneme.masterchef.model.RecipeList
 import be.ctnr.mongodeneme.masterchef.repository.RecipeRepository
-import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import org.apache.tomcat.util.codec.binary.Base64.encodeBase64String
-import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.core.env.Environment
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.core.MongoOperations
+import org.springframework.data.mongodb.core.aggregate
+import org.springframework.data.mongodb.core.aggregation.*
 import org.springframework.data.mongodb.core.messaging.*
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.function.ServerResponse.async
-import java.io.InputStream
 import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import java.util.*
-import kotlin.random.Random
 
 
 @RestController
@@ -30,7 +25,8 @@ import kotlin.random.Random
 
 class RecipeControllers(
     val recipeRepository: RecipeRepository,
-    val env: Environment
+    val env: Environment,
+    val mongoOperations: MongoOperations
 ) {
 
     @GetMapping("/{page}")
@@ -67,16 +63,13 @@ class RecipeControllers(
 
     @GetMapping("/random")
     fun getRecipeRandom(@RequestHeader("token") token: String): ResponseEntity<String> {
-        return if (token == env.getProperty("token")) {
-            val recipeList = recipeRepository.findAll()
-            val randomInt = Random.nextInt(recipeList.count() - 1)
-            println("$recipeList   $randomInt")
-            ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON)
-                .body(Gson().toJson(recipeList[randomInt]))
-        } else {
-            ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON)
-                .body(Gson().toJson("{\"token\": \"not correct\"}"))
-        }
+
+        val match: SampleOperation? = SampleOperation(1)
+        val aggregate = Aggregation.newAggregation(SampleOperation(1))
+
+        val orderAggregate: AggregationResults<Recipe> = mongoOperations.aggregate(aggregate, Recipe::class.java, Recipe::class.java)
+        return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(Gson().toJson(orderAggregate.getMappedResults()[0]))
+
     }
 
 //    @GetMapping("/startUpdate")
