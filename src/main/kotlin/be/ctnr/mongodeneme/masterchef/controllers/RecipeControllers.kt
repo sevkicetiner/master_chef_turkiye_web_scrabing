@@ -77,7 +77,6 @@ class RecipeControllers(
             mongoOperations.aggregate(aggregate, Recipe::class.java, Recipe::class.java)
         return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON)
             .body(Gson().toJson(orderAggregate.getMappedResults()[0]))
-
     }
 
     @GetMapping("/startUpdate")
@@ -113,11 +112,12 @@ class RecipeControllers(
                 if (!Files.exists(Paths.get("${env.getProperty("localImagePath")}"))) {
                     Files.copy(
                         inputstream,
-                        Paths.get(env.getProperty("localImagePath") + filename),
+                        Paths.get("../images/" + filename),
                         StandardCopyOption.REPLACE_EXISTING
                     )
                 }
                 item.localImage = filename
+                println("resim indirildi")
             }
         }
         recipeRepository.save(item)

@@ -23,7 +23,7 @@ import java.util.*
 class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environment)  {
     var counter = 1
     var newItemCount:Int= 0
-    @Scheduled(fixedDelay = 1000*60*60*3, initialDelay = 30000)
+    @Scheduled(fixedDelay = 1000*60*60*1, initialDelay = 30000)
     fun calisiyormusun(){
         val list = MasterchefRest.sendGet(1)
         counter++
@@ -49,7 +49,6 @@ class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environmen
                             )
                         }
                     }
-
                     recipeRepository.save(it).let {
                         println("${it.baslik} kaydedildi")
                     }
