@@ -8,10 +8,8 @@ services:
     build: .
     restart: always
     ports:
-      - 8080:8080
+      - 8181:8181
     links:
       - java
-    depends_on:
-      - mongo
     environment:
       - SPRING_DATA_MONGODB_.HOST=mongo
