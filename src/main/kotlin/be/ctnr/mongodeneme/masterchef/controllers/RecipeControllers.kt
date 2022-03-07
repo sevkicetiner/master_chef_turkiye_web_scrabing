@@ -109,11 +109,15 @@ class RecipeControllers(
             URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().use { inputstream ->
                 val filename = resimOriginal.split("/").last();
 //                if (!Files.exists(Paths.get("${env.getProperty("localImagePath")}"))) {
+                try{
                     Files.copy(
                         inputstream,
                         Paths.get("images/" + filename),
                         StandardCopyOption.REPLACE_EXISTING
                     )
+                }catch (e:Exception){
+                    println(e.message)
+                }
 //                }
                 item.localImage = filename
                 println("resim indirildi")
