@@ -41,7 +41,7 @@ class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environmen
                         .get("original").asString ?: "null"
 //                    it.localImage = Base64.getEncoder().encodeToString(URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes())
                     URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().use {
-                        if (!Files.exists(Paths.get("${env.getProperty("localImagePath")}"))) {
+                        if (!Files.exists(Paths.get("images/"+resimOriginal.split("/").last()))) {
                             Files.copy(
                                 it,
                                 Paths.get("images/" + resimOriginal.split("/").last()),

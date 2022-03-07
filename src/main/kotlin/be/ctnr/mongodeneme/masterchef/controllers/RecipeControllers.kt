@@ -32,7 +32,6 @@ class RecipeControllers(
     val recipeRepository: RecipeRepository,
     val env: Environment,
     val mongoOperations: MongoOperations,
-    val servletContext: ServletContext
 ) {
 
     @GetMapping("/{page}")
@@ -124,7 +123,6 @@ class RecipeControllers(
     }
 
     @GetMapping("/image/{imageName}")
-    @Throws(IOException::class)
     fun image(@PathVariable imageName: String): ResponseEntity<Resource?>? {
         val inputStream = ByteArrayResource(
             Files.readAllBytes(
