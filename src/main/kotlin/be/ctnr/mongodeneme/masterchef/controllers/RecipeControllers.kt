@@ -131,7 +131,7 @@ class RecipeControllers(
         val inputStream = ByteArrayResource(
             Files.readAllBytes(
                 Paths.get(
-                    "images/${imageName}"
+                    "${env.getProperty("localImagePath")}${imageName}"
                 )
             )
         )
