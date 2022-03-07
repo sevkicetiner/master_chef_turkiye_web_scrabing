@@ -13,6 +13,9 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.lang.Exception
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.util.*
 
 
@@ -36,7 +39,17 @@ class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environmen
                         .parse(it.resim.replace("\\","").replace("\\",""))
                         .asJsonObject
                         .get("original").asString ?: "null"
-                    it.localImage = Base64.getEncoder().encodeToString(URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes())
+//                    it.localImage = Base64.getEncoder().encodeToString(URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes())
+                    URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().use {
+                        if (!Files.exists(Paths.get("${env.getProperty("localImagePath")}"))) {
+                            Files.copy(
+                                it,
+                                Paths.get(env.getProperty("localImagePath") + resimOriginal.split("/").last()),
+                                StandardCopyOption.REPLACE_EXISTING
+                            )
+                        }
+                    }
+
                     recipeRepository.save(it).let {
                         println("${it.baslik} kaydedildi")
                     }
