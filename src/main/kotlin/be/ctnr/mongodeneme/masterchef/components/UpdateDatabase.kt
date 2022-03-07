@@ -44,7 +44,7 @@ class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environmen
                         if (!Files.exists(Paths.get("${env.getProperty("localImagePath")}"))) {
                             Files.copy(
                                 it,
-                                Paths.get(env.getProperty("localImagePath") + resimOriginal.split("/").last()),
+                                Paths.get("images/" + resimOriginal.split("/").last()),
                                 StandardCopyOption.REPLACE_EXISTING
                             )
                         }

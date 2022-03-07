@@ -112,7 +112,7 @@ class RecipeControllers(
 //                if (!Files.exists(Paths.get("${env.getProperty("localImagePath")}"))) {
                     Files.copy(
                         inputstream,
-                        Paths.get("../images/" + filename),
+                        Paths.get("images/" + filename),
                         StandardCopyOption.REPLACE_EXISTING
                     )
 //                }
@@ -129,7 +129,7 @@ class RecipeControllers(
         val inputStream = ByteArrayResource(
             Files.readAllBytes(
                 Paths.get(
-                    "${env.getProperty("localImagePath")}${imageName}"
+                    "images/${imageName}"
                 )
             )
         )
