@@ -2,21 +2,16 @@ package be.ctnr.mongodeneme.masterchef.components
 
 import be.ctnr.mongodeneme.masterchef.repository.RecipeRepository
 import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
-import com.fasterxml.jackson.databind.util.JSONPObject
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.springframework.core.env.Environment
-import org.springframework.data.mongodb.core.aggregation.VariableOperators
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.lang.Exception
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.util.*
+import kotlin.Exception
 
 
 @Component
@@ -41,12 +36,16 @@ class UpdateDatabase(val recipeRepository: RecipeRepository, val env: Environmen
                         .get("original").asString ?: "null"
 //                    it.localImage = Base64.getEncoder().encodeToString(URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().readAllBytes())
                     URL("${env.getProperty("imageUrl")}$resimOriginal").openStream().use {
-                        if (!Files.exists(Paths.get("images/"+resimOriginal.split("/").last()))) {
-                            Files.copy(
-                                it,
-                                Paths.get("images/" + resimOriginal.split("/").last()),
-                                StandardCopyOption.REPLACE_EXISTING
-                            )
+                        if (!Files.exists(Paths.get(env.getProperty("localImagePath")+resimOriginal.split("/").last()))) {
+                            try {
+                                Files.copy(
+                                    it,
+                                    Paths.get(env.getProperty("localImagePath") + resimOriginal.split("/").last()),
+                                    StandardCopyOption.REPLACE_EXISTING
+                                )
+                            }catch (e:Exception){
+                                println(e.message)
+                            }
                         }
                     }
                     recipeRepository.save(it).let {

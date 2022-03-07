@@ -112,7 +112,7 @@ class RecipeControllers(
                 try{
                     Files.copy(
                         inputstream,
-                        Paths.get("images/" + filename),
+                        Paths.get(env.getProperty("localImagePath") + filename),
                         StandardCopyOption.REPLACE_EXISTING
                     )
                 }catch (e:Exception){
