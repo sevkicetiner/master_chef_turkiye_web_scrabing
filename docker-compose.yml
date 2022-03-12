@@ -11,4 +11,9 @@ services:
       - 8282:8282
     links:
       - java
+    networks:
+      - ctnr-net
 
+networks:
+  ctnr-net:
+    external: true
