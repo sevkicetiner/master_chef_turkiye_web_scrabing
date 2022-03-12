@@ -6,24 +6,26 @@ import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import org.springframework.core.env.Environment
-import org.springframework.core.env.get
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
+import org.springframework.data.domain.Example
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationResults
 import org.springframework.data.mongodb.core.aggregation.SampleOperation
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
 import org.springframework.http.*
 import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.*
-import java.io.IOException
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import javax.servlet.ServletContext
+import java.util.regex.PatternSyntaxException
+import kotlin.io.path.Path
 
 
 @RestController
@@ -126,19 +128,36 @@ class RecipeControllers(
         recipeRepository.save(item)
     }
 
-    @GetMapping("/image/{imageName}")
-    fun image(@PathVariable imageName: String): ResponseEntity<Resource?>? {
+    @GetMapping("/getImage")
+    fun image(@RequestHeader("imageName") imageName: String): ResponseEntity<Resource> {
+        print("istek alindi" + imageName)
         val inputStream = ByteArrayResource(
-            Files.readAllBytes(
-                Paths.get(
-                    "${env.getProperty("localImagePath")}${imageName}"
-                )
-            )
+            Files.readAllBytes(Path(env.getProperty("localImagePath")+imageName))
         )
         return ResponseEntity
             .status(HttpStatus.OK)
             .contentType(MediaType.IMAGE_JPEG)
             .contentLength(inputStream.contentLength())
             .body(inputStream)
+    }
+
+    @GetMapping("/search")
+    fun search(@RequestHeader("searchText") searchText:String, @RequestHeader("token") token:String) : ResponseEntity<String> {
+        print("istek alindi $searchText")
+        return if (token == env.getProperty("token")) {
+            try {
+                val query = Query()
+                query.addCriteria(Criteria.where("baslik_orig").regex( ".*$searchText.*")) //.regex(toLikeRegex(like))
+                val response = mongoOperations.find(query, Recipe::class.java)
+                ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(Gson().toJson(response))
+            }catch (e:Exception){
+                ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(Gson().toJson(e.message))
+            }
+
+        } else {
+            ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON)
+                .body(Gson().toJson("{\"token\": \"not correct\"}"))
+        }
+
     }
 }
