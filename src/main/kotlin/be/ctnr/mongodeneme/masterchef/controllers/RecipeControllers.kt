@@ -5,6 +5,7 @@ import be.ctnr.mongodeneme.masterchef.repository.RecipeRepository
 import be.ctnr.mongodeneme.masterchef.utils.MasterchefRest
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
@@ -31,9 +32,9 @@ import kotlin.io.path.Path
 @RestController
 @RequestMapping("/recipes")
 class RecipeControllers(
-    val recipeRepository: RecipeRepository,
-    val env: Environment,
-    val mongoOperations: MongoOperations,
+    @Autowired val recipeRepository: RecipeRepository,
+    @Autowired val env: Environment,
+    @Autowired val mongoOperations: MongoOperations,
 ) {
 
     @GetMapping("/{page}")
