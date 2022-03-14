@@ -13,7 +13,8 @@ services:
       - java
     networks:
       - ctnr-net
-
+    volumes:
+      - /media/storage/masterchef/
 networks:
   ctnr-net:
     external: true
