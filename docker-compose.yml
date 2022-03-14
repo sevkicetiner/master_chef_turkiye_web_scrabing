@@ -14,7 +14,7 @@ services:
     networks:
       - ctnr-net
     volumes:
-      - /media/storage/masterchef/
+      - /media/storage/masterchef/images:/images
 networks:
   ctnr-net:
     external: true
