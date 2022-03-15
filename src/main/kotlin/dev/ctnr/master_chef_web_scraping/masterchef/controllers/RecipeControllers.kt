@@ -123,20 +123,20 @@ class RecipeControllers(
         recipeRepository.save(item)
     }
 
-    @GetMapping("/getImage")
-    fun image(@RequestHeader("imageName") imageName: String): ResponseEntity<Resource?> {
-        try {
+    @GetMapping("/getImage/{image}")
+    fun image(@PathVariable("image") imageName: String): ResponseEntity<Resource?> {
+        return try {
             val inputStream = ByteArrayResource(
                 Files.readAllBytes(Path(env.getProperty("localImagePath")+imageName))
             )
-            return ResponseEntity
+            ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.IMAGE_JPEG)
                 .contentLength(inputStream.contentLength())
                 .body(inputStream)
-        } catch (e:Exception){
+        } catch (e:Exception) {
             print(e)
-            return ResponseEntity.status(200).contentType(MediaType.IMAGE_JPEG).body(null)
+            ResponseEntity.status(200).contentType(MediaType.IMAGE_JPEG).body(null)
         }
     }
 
