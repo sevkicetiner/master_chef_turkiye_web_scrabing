@@ -124,10 +124,10 @@ class RecipeControllers(
     }
 
     @GetMapping("/getImage/{image}")
-    fun image(@PathVariable("image") imageName: String): ResponseEntity<Resource?> {
+    fun image(@PathVariable("image") image: String): ResponseEntity<Resource?> {
         return try {
             val inputStream = ByteArrayResource(
-                Files.readAllBytes(Path(env.getProperty("localImagePath")+imageName))
+                Files.readAllBytes(Path("${env.getProperty("localImagePath")}$image"))
             )
             ResponseEntity
                 .status(HttpStatus.OK)
